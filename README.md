@@ -1,30 +1,32 @@
-# Stage 4/8: Add subtractions
+# Stage 5/8: Error!
 ## Description
-Finally, we got to the next operation: subtraction. It means that from now on the program must receive the addition `+` and subtraction `-` operators as an input to distinguish operations from each other. It must support both unary and binary minus operators. Moreover, If the user has entered several same operators following each other, the program still should work (like Java or Python REPL). Also, as you remember from school math, two adjacent minus signs turn into a plus. Therefore, if the user inputs `--`, it should be read as `+`; if they input `----`, it should be read as `++`, and so on. The smart calculator ought to have such a feature.
-
-Pay attention to the `/help` command, it is important to maintain its relevance depending on the changes (in the next stages too). You can write information about your program in free form, but the main thing is that it should be understandable to you and other users.
+Now you need to consider the reaction of the calculator when users enter expressions in the wrong format. The program only knows numbers, a plus sign, a minus sign, and two commands. It cannot accept all other characters and it is necessary to warn the user about this.
 
 ## Objectives
-- The program must calculate expressions like these: `4 + 6 - 8`, `2 - 3 - 4`, and so on.
-- Modify the result of the `/help` command to explain these operations.
-- Decompose your program using functions to make it easy to understand and edit later.
-- The program should not stop until the user enters the `/exit` command.
-- If you encounter an empty line, do not output anything.
+- The program should print `Invalid expression` in cases when the given expression has an invalid format. If a user enters an invalid command, the program must print `Unknown command`. All messages must be printed without quotes. The program must never throw an exception.
+- To handle incorrect input, you should remember that the user input that starts with `/` is a <i>command</i>, in other situations, it is an <i>expression</i>.
+- Like before, `/help` command should print information about your program. When the command `/exit` is entered, the program must print `Bye!` , and then stop.
 
 ## Examples
 The greater-than symbol followed by a space (`> `) represents the user input.
-
 ```
-> 8
-8
-> -2 + 4 - 5 + 6
-3
-> 9 +++ 10 -- 8
-27
-> 3 --- 5
--2
-> 14       -   12
-2
+> 8 + 7 - 4
+11
+> abc
+Invalid expression
+> 123+
+Invalid expression
+> +15
+15
+> 18 22
+Invalid expression
+>
+> -22
+-22
+> 22-
+Invalid expression
+> /go
+Unknown command
 > /exit
 Bye!
 ```
