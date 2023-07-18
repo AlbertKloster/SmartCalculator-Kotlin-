@@ -1,94 +1,109 @@
-# Stage 6/8: Variables
+# Stage 7/8: I’ve got the power
 ## Description
-Now, the calculator will be able to store the results of previous calculations. Do you have any idea how to do that? Of course! This can be achieved by introducing variables. Storing results in variables and then operating on them at any time is a very convenient function.
+In the final stage, it remains to add operations: multiplication `*`, integer division `/` and parentheses `(...)`. They have a higher priority than addition `+` and subtraction `-`.
+
+Here is an example of an expression that contains all possible operations:
+```
+3 + 8 * ((4 + 3) * 2 + 1) - 6 / (2 + 1)
+```
+
+The result is 121.
+
+A general expression can contain many parentheses and operations with different priorities. It is difficult to calculate such expressions if you do not use special methods. Fortunately, there is a fairly effective and universal solution, using a stack, to calculate the most general expressions.
+
+<b>From infix to postfix</b>
+
+Earlier we processed expressions written in infix notation. This notation is not very convenient if an expression has operations with different priorities, especially when brackets are used. But we can use <b>postfix notation</b>, also known as <b>Reverse Polish notation (RPN)</b>. In this notation, operators follow their operands. See several examples below.
+
+<b>Infix notation 1:</b>
+```
+3 + 2 * 4
+
+```
+
+<b>Postfix notation 1:</b>
+```
+3 2 4 * +
+
+```
+
+<b>Infix notation 2:</b>
+```
+2 * (3 + 4) + 1
+
+```
+
+<b>Postfix notation 2:</b>
+```
+2 3 4 + * 1 +
+```
+
+To better understand the postfix notation, you can play with a <a href="https://www.calcont.in/Conversion/infix_to_postfix">converter</a>.
+
+As you can see, in postfix notation operations are arranged according to their priority and parentheses are not used at all. So, it is easier to calculate expressions written in postfix notation.
+
+You can use a stack (<b>LIFO</b>) to convert an expression from infix to postfix notation. The stack is used to store operators for reordering. Here are some rules that describe how to create an algorithm that converts an expression from infix to postfix notation.
+
+1. Add operands (numbers and variables) to the result (postfix notation) as they arrive.
+2. If the stack is empty or contains a left parenthesis on top, push the incoming operator on the stack.
+3. If the incoming operator has higher precedence than the top of the stack, push it on the stack.
+4. If the precedence of the incoming operator is lower than or equal to that of the top of the stack, pop the stack and add operators to the result until you see an operator that has smaller precedence or a left parenthesis on the top of the stack; then add the incoming operator to the stack.
+5. If the incoming element is a left parenthesis, push it on the stack.
+6. If the incoming element is a right parenthesis, pop the stack and add operators to the result until you see a left parenthesis. Discard the pair of parentheses.
+7. At the end of the expression, pop the stack and add all operators to the result.
+
+No parentheses should remain on the stack. Otherwise, the expression has unbalanced brackets. It is a syntax error.
+
+<b>Calculating the result</b>
+
+When we have an expression in postfix notation, we can calculate it using another stack. To do that, scan the postfix expression from left to right:
+
+- If the incoming element is a number, push it into the stack (the whole number, not a single digit!).
+- If the incoming element is the name of a variable, push its value into the stack.
+- If the incoming element is an operator, then pop twice to get two numbers and perform the operation; push the result on the stack.
+- When the expression ends, the number on the top of the stack is a final result.
+
+Here you can find <a href="http://www.cs.nthu.edu.tw/~wkhon/ds/ds10/tutorial/tutorial2.pdf">an example and additional explanations on postfix expressions</a>.
 
 ## Objectives
-So, your program should support variables.
+- Your program should support multiplication `*`, integer division `/` and parentheses `(...)`. To do this, use infix to postfix conversion algorithm above and then calculate the result using stack.
+- Do not forget about variables; they, and the unary minus operator, should still work.
+- Modify the result of the `/help` command to explain all possible operators. You can write the output for the command in free form.
+- The program should not stop until the user enters the `/exit` command.
+- Note that a sequence of `+` (like `+++` or `+++++`) is an admissible operator that should be interpreted as a single plus. A sequence of `-` (like `--` or `---`) is also an admissible operator and its meaning depends on the length. If a user enters a sequence of `*` or `/`, the program must print a message that the expression is invalid.
+- <b>As a bonus</b>, you may add the power operator `^` that has a higher priority than `*` and `/`.
 
-Go by the following rules for variables:
-
-- We suppose that the name of a variable (identifier) can contain only Latin letters.
-- A variable can have a name consisting of more than one letter.
-- The case is also important; for example, <b>n</b> is not the same as <b>N</b>.
-- The value can be an integer number or a value of another variable.
-- It should be possible to set a new value to an existing variable.
-- To print the value of a variable you should just type its name.
-
-The example below shows how variables can be declared and displayed.
 ```
-> n = 3
-> m=4
-> a  =   5
-> b = a
-> v=   7
-> n =9
-> count = 10
-> a = 1
-> a = 2
-> a = 3
-> a
-3
+> 2^2
+4
+> 2*2^3
+16
 ```
-
-Incorrect spelling or declaration of variables should also throw an exception with the corresponding message to the user:
-
-- First, the variable is checked for correctness. If the user inputs an invalid variable name, then the output should be `Invalid identifier`.
-```
-> a2a
-Invalid identifier
-> n22
-Invalid identifier
-```
-
-- If a variable is valid but not declared yet, the program should print `Unknown variable`.
-```
-> a = 8
-> b = c
-Unknown variable
-> e
-Unknown variable
-```
-
-- If an identifier or value of a variable is invalid during variable declaration, the program must print a message like the one below.
-```
-> a1 = 8
-Invalid identifier
-> n1 = a2a
-Invalid identifier
-> n = a2a
-Invalid assignment
-> a = 7 = 8
-Invalid assignment
-```
-
-Please note that the program should print `Invalid identifier` if the left part of the assignment is incorrect. If the part after the `=` is wrong then use the `Invalid assignment`. First we should check the left side.
-
-Handle as many incorrect inputs as possible. The program must never throw an exception of any kind.
-
-It is important to note, all variables must store their values between calculations of different expressions.
-
-Do not forget about previously implemented commands: `/help` and `/exit`.
 
 ## Examples
 The greater-than symbol followed by a space (`> `) represents the user input.
 ```
-> a  =  3
-> b= 4
-> c =5
-> a + b - c
-2
-> b - c + 4 - a
-0
-> a = 800
-> a + b + c
-809
-> BIG = 9000
-> BIG
-9000
-> big
-Unknown variable
+> 8 * 3 + 12 * (4 - 2)
+48
+> 2 - 2 + 3
+3
+> 4 * (2 + 3
+Invalid expression
+> -10
+-10
+> a=4
+> b=5
+> c=6
+> a*2+b*3+c*(2+3)
+53
+> 1 +++ 2 * 3 -- 4
+11
+> 3 *** 5
+Invalid expression
+> 4+3)
+Invalid expression
+> /command
+Unknown command
 > /exit
 Bye!
 ```
-
-<b>Tip:</b> Think of your program as of a set of instructions to different cases. For example, if it's a command, you perform one set of actions, or if it's an assignment operation, then you perform other actions if it's an expression that needs calculation it's also another thing. Refactoring your program at this stage is not a bad idea!
