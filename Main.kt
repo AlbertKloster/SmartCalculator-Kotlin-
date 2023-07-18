@@ -36,6 +36,7 @@ fun main() {
                 val infix = getInfix(input)
                 val postfix = getPostfix(infix)
                 val result = evaluatePostfix(postfix)
+
                 println(result)
             }
         } catch (e: RuntimeException) {
